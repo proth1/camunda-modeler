@@ -26,7 +26,8 @@ export const MIN_WIDTH = 280;
 
 export const DEFAULT_LAYOUT = {
   open: false,
-  width: MIN_WIDTH
+  width: MIN_WIDTH,
+  groups: {}
 };
 
 /**

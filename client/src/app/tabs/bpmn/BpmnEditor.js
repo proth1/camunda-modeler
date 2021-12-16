@@ -156,6 +156,13 @@ export class BpmnEditor extends CachedComponent {
 
     propertiesPanel.attachTo(this.propertiesPanelRef.current);
 
+    const eventBus = modeler.get('eventBus');
+
+    if (layout.propertiesPanel) {
+      eventBus.fire('propertiesPanel.updateLayout', {
+        layout: layout.propertiesPanel
+      });
+    }
 
     try {
       await this.loadTemplates();
@@ -215,6 +222,8 @@ export class BpmnEditor extends CachedComponent {
     modeler[fn]('minimap.toggle', this.handleMinimapToggle);
 
     modeler[ fn ]('commandStack.changed', LOW_PRIORITY, this.handleLintingDebounced);
+
+    modeler[ fn ]('propertiesPanel.layoutChanged', this.handlePropertiesPanelLayoutChanged);
   }
 
   async loadTemplates() {
@@ -263,6 +272,34 @@ export class BpmnEditor extends CachedComponent {
         open: event.open
       }
     });
+  }
+
+  handlePropertiesPanelLayoutChanged = (event) => {
+    const {
+      layout: newLayout
+    } = event;
+
+    const {
+      layout = {}
+    } = this.props;
+
+    const {
+      propertiesPanel: propertiesPanelLayout = {}
+    } = layout;
+
+    const updates = {
+      ...propertiesPanelLayout,
+      groups: newLayout.groups
+    };
+
+    if (!shallowEquals(propertiesPanelLayout, updates)) {
+      this.handleLayoutChange({
+        propertiesPanel: {
+          ...propertiesPanelLayout,
+          ...updates
+        }
+      });
+    }
   }
 
   handleElementTemplateErrors = (event) => {
@@ -724,7 +761,7 @@ export class BpmnEditor extends CachedComponent {
     } = this.props;
 
     if (isFunction(onLayoutChanged)) {
-      onLayoutChanged(newLayout);
+      onLayoutChanged(cloneDeep(newLayout));
     }
   }
 
@@ -809,9 +846,14 @@ export class BpmnEditor extends CachedComponent {
 
     const {
       getPlugins,
+      layout = {},
       onAction,
       onError
     } = props;
+
+    const {
+      propertiesPanel: propertiesPanelLayout = {}
+    } = layout;
 
     // notify interested parties that modeler will be configured
     const handleMiddlewareExtensions = (middlewares) => {
@@ -843,7 +885,12 @@ export class BpmnEditor extends CachedComponent {
 
     const modeler = new BpmnModeler({
       ...options,
-      position: 'absolute'
+      position: 'absolute',
+      propertiesPanel: {
+        layout: {
+          groups: cloneDeep(propertiesPanelLayout.groups)
+        }
+      }
     });
 
     const commandStack = modeler.get('commandStack');
@@ -897,4 +944,16 @@ function getNamespaceDialog() {
 
 function isCacheStateChanged(prevProps, props) {
   return prevProps.cachedState !== props.cachedState;
+}
+
+function hash(el) {
+  return JSON.stringify(el);
+}
+
+function shallowEquals(a, b) {
+  return hash(a) === hash(b);
+}
+
+function cloneDeep(el) {
+  return JSON.parse(JSON.stringify(el));
 }

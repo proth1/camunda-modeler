@@ -140,6 +140,14 @@ export class BpmnEditor extends CachedComponent {
 
     propertiesPanel.attachTo(this.propertiesPanelRef.current);
 
+    const eventBus = modeler.get('eventBus');
+
+    if (layout.propertiesPanel) {
+      eventBus.fire('propertiesPanel.updateLayout', {
+        layout: layout.propertiesPanel
+      });
+    }
+
     this.checkImport();
   }
 
@@ -190,6 +198,8 @@ export class BpmnEditor extends CachedComponent {
     modeler[fn]('minimap.toggle', this.handleMinimapToggle);
 
     modeler[ fn ]('commandStack.changed', LOW_PRIORITY, this.handleLintingDebounced);
+
+    modeler[ fn ]('propertiesPanel.layoutChanged', this.handlePropertiesPanelLayoutChanged);
   }
 
   undo = () => {
@@ -216,6 +226,34 @@ export class BpmnEditor extends CachedComponent {
         open: event.open
       }
     });
+  }
+
+  handlePropertiesPanelLayoutChanged = (event) => {
+    const {
+      layout: newLayout
+    } = event;
+
+    const {
+      layout = {}
+    } = this.props;
+
+    const {
+      propertiesPanel: propertiesPanelLayout = {}
+    } = layout;
+
+    const updates = {
+      ...propertiesPanelLayout,
+      groups: newLayout.groups
+    };
+
+    if (!shallowEquals(propertiesPanelLayout, updates)) {
+      this.handleLayoutChange({
+        propertiesPanel: {
+          ...propertiesPanelLayout,
+          ...updates
+        }
+      });
+    }
   }
 
   handleError = (event) => {
@@ -633,7 +671,7 @@ export class BpmnEditor extends CachedComponent {
     } = this.props;
 
     if (isFunction(onLayoutChanged)) {
-      onLayoutChanged(newLayout);
+      onLayoutChanged(cloneDeep(newLayout));
     }
   }
 
@@ -718,7 +756,12 @@ export class BpmnEditor extends CachedComponent {
 
     const {
       onAction,
+      layout = {}
     } = props;
+
+    const {
+      propertiesPanel: propertiesPanelLayout = {}
+    } = layout;
 
     // TODO @pinussilvestrus: ignore plugins for now
     const options = {
@@ -726,12 +769,16 @@ export class BpmnEditor extends CachedComponent {
       exporter: {
         name,
         version
+      },
+      propertiesPanel: {
+        layout: {
+          groups: cloneDeep(propertiesPanelLayout.groups)
+        }
       }
     };
 
     const modeler = new BpmnModeler({
-      ...options,
-      position: 'absolute'
+      ...options
     });
 
     const commandStack = modeler.get('commandStack');
@@ -766,4 +813,16 @@ export default WithCache(WithCachedState(BpmnEditor));
 
 function isCacheStateChanged(prevProps, props) {
   return prevProps.cachedState !== props.cachedState;
+}
+
+function hash(el) {
+  return JSON.stringify(el);
+}
+
+function shallowEquals(a, b) {
+  return hash(a) === hash(b);
+}
+
+function cloneDeep(el) {
+  return JSON.parse(JSON.stringify(el));
 }
