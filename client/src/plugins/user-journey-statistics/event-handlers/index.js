@@ -8,8 +8,10 @@
  * except in compliance with the MIT License.
  */
 
+import OverlayEventHandler from './OverlayEventHandler';
 import TabEventHandler from './TabEventHandler';
 
 export default [
+  OverlayEventHandler,
   TabEventHandler
 ];
