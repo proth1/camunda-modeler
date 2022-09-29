@@ -39,6 +39,10 @@ class Metadata {
 
   init(data) {
     this.data = data;
+
+    const { version } = data;
+
+    window.appVersion = version;
   }
 
   get name() {

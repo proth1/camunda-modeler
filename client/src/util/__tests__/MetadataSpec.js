@@ -17,22 +17,25 @@ describe('Metadata', function() {
 
   describe('init', function() {
 
-    it('should properly initialize', function() {
+    it('should initialize', function() {
 
       // given
       const metadata = new Metadata();
-      const data = {
-        name: 'name',
-        version: 'version'
-      };
+
+      const name = 'name',
+            version = 'version';
 
       // when
-      metadata.init(data);
+      metadata.init({
+        name,
+        version
+      });
 
       // then
-      expect(metadata).to.have.property('name').eql(data.name);
-      expect(metadata).to.have.property('version').eql(data.version);
+      expect(metadata).to.have.property('name').equal(name);
+      expect(metadata).to.have.property('version').equal(version);
 
+      expect(window.appVersion).to.equal(version);
     });
 
   });
