@@ -327,6 +327,10 @@ export class BpmnEditor extends CachedComponent {
       });
 
       this.handleLinting();
+
+      // TODO: handle cache invalidation in variables plugin
+      const variableResolver = modeler.get('variableResolver', false);
+      variableResolver && variableResolver.invalidateCache();
     }
 
     this.setState({
