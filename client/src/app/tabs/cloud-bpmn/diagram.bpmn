@@ -1,13 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_{{ ID }}" targetNamespace="http://bpmn.io/schema/bpmn" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" exporter="{{ EXPORTER_NAME }}" exporterVersion="{{ EXPORTER_VERSION }}" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="{{ CAMUNDA_CLOUD_VERSION }}">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" id="Definitions_{{ ID }}" targetNamespace="http://bpmn.io/schema/bpmn" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:exampleData="https://github.com/bpmn-io/bpmn-js-example-data-extension/" exporter="{{ EXPORTER_NAME }}" exporterVersion="{{ EXPORTER_VERSION }}" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="{{ CAMUNDA_CLOUD_VERSION }}">
   <bpmn:process id="Process_{{ ID:process }}" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1" />
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:extensionElements>
+        <exampleData:output>
+        {
+          "globalVariable": {
+              "foo": "aString",
+              "bar": [
+                {
+                "id": "anyId"
+                }
+              ]
+          }
+        }
+      </exampleData:output>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1riktah</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:serviceTask id="Activity_1jm0ws1">
+      <bpmn:extensionElements>
+        <exampleData:output>
+        {
+          "localVariable": {
+              "baz": "aString"
+          }
+        }
+        </exampleData:output>
+        <zeebe:ioMapping>
+          <zeebe:output source="" target="VariableMapping" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1riktah</bpmn:incoming>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_1riktah" sourceRef="StartEvent_1" targetRef="Activity_1jm0ws1" />
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_{{ ID:process }}">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="179" y="159" width="36" height="36" />
+        <dc:Bounds x="179" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cfhu63_di" bpmnElement="Activity_1jm0ws1">
+        <dc:Bounds x="290" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1riktah_di" bpmnElement="Flow_1riktah">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="290" y="117" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

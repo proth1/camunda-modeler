@@ -18,6 +18,10 @@ import handToolOnSpaceModule from './features/hand-tool-on-space';
 import propertiesPanelKeyboardBindingsModule from './features/properties-panel-keyboard-bindings';
 import lintingAnnotationsModule from '@camunda/linting/modeler';
 
+import VariableResolverModule from '@bpmn-io/variable-resolver';
+import ExampleExtractorModule from 'bpmn-js-example-data-extension';
+import ExampleExtractorModdle from 'bpmn-js-example-data-extension/lib/exampleData.json';
+
 import Flags, { DISABLE_ADJUST_ORIGIN } from '../../../../util/Flags';
 
 
@@ -34,7 +38,8 @@ export default class PlatformBpmnModeler extends BpmnModeler {
       ...otherOptions,
       disableAdjustOrigin: Flags.get(DISABLE_ADJUST_ORIGIN),
       moddleExtensions: {
-        ...(moddleExtensions || {})
+        ...(moddleExtensions || {}),
+        exampleData: ExampleExtractorModdle
       }
     });
   }
@@ -48,7 +53,9 @@ const extensionModules = [
   globalClipboardModule,
   handToolOnSpaceModule,
   propertiesPanelKeyboardBindingsModule,
-  lintingAnnotationsModule
+  lintingAnnotationsModule,
+  VariableResolverModule,
+  ExampleExtractorModule
 ];
 
 PlatformBpmnModeler.prototype._modules = [
