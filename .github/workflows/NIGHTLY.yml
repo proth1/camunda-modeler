@@ -10,15 +10,15 @@ jobs:
         include:
         - os: ubuntu-latest
           files:
-          - "camunda-modeler-nightly-linux-x64.tar.gz"
+          - 'dist/camunda-modeler-nightly-linux-x64.tar.gz'
         - os: macos-11
           files:
-          - "camunda-modeler-nightly-mac.dmg"
-          - "camunda-modeler-nightly-mac.zip"
+          - 'dist/camunda-modeler-nightly-mac.dmg'
+          - 'dist/camunda-modeler-nightly-mac.zip'
         - os: windows-2019
           files:
-          - "camunda-modeler-nightly-win-ia32.zip"
-          - "camunda-modeler-nightly-win-x64.zip"
+          - 'dist/camunda-modeler-nightly-win-ia32.zip'
+          - 'dist/camunda-modeler-nightly-win-x64.zip'
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -91,13 +91,12 @@ jobs:
         secrets: |
           secret/data/common/jenkins/downloads-camunda-cloud_google_sa_key DOWNLOAD_CENTER_GCLOUD_KEY_BYTES | GCP_CREDENTIALS_NAME;
     - name: Upload artifact to Camunda Download Center
-      if: ${{ runner.os == 'Linux' }}
-      uses: camunda/download-center-upload-action@v0.1.0
+      uses: camunda/infra-global-github-actions/download-center-upload@move-download-action
       with:
         gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
         env: 'dev'
         artifact_subpath: 'nightly'
-        artifact_file: 'dist/camunda-modeler-nightly-linux-x64.tar.gz'
+        artifact_file: ${{ join(matrix.files, ', ') }}
 
   Post-Failure:
     needs: Build_nightly
