@@ -96,15 +96,15 @@ jobs:
         gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
         env: 'dev'
         artifact_subpath: 'nightly'
-        artifact_file: 'dist/${{ matrix.files.0 }}'
+        artifact_file: 'dist/${{ toJSON(matrix.files[0]) }}'
     - name: Upload artifact to Camunda Download Center (part 2)
-      if: '${{ matrix.files.1 }}' != ''
+      if: '${{ toJSON(matrix.files[1]) }}' != ''
       uses: camunda/download-center-upload-action@v0.1.0
       with:
         gcp_credentials: ${{ steps.secrets.outputs.GCP_CREDENTIALS_NAME }}
         env: 'dev'
         artifact_subpath: 'nightly'
-        artifact_file: 'dist/${{ matrix.files.1 }}'
+        artifact_file: 'dist/${{ toJSON(matrix.files[1]) }}'
 
   Post-Failure:
     needs: Build_nightly
